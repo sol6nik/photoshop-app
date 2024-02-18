@@ -33,7 +33,7 @@ const ImageSizeComponent: React.FC = () => {
 
   const handleImageLoad = () => {
     const image = new Image();
-    image.crossOrigin = "anonymous"; // Установите crossOrigin на "anonymous"
+    image.crossOrigin = "anonymous";
     image.src = imageUrl;
     image.onload = () => {
       setImageSize({ width: image.width, height: image.height });
