@@ -1,0 +1,49 @@
+.form{
+    display: flex;
+    flex-direction: column;
+}
+
+.form__link{
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.from__input-url{
+    display: block;
+    width: 250px;
+    height: 35px;
+    border: 1px solid blueviolet;
+    border-radius: 6px;
+    outline: none;
+    margin: 0 0 10px 0;
+    padding: 5px;
+}
+
+.form__btn-link{
+    display: block;
+    width: 250px;
+    height: 35px;
+    border-radius: 6px;
+    outline: none;
+    border: none;
+    background-color: blueviolet;
+    color: white;
+    padding: 5px;
+    cursor: pointer;
+}
+.from__input-file{
+    display: block;
+    width: 250px;
+    height: 35px;
+    border: 1px solid blueviolet;
+    border-radius: 6px;
+    outline: none;
+    margin: 0 0 10px 0;
+    padding: 5px;
+}
+
+.hover__color{
+    display: block;
+    margin: 6px;
+}

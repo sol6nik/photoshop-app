@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import "./CanvasComponent.css";
 
 const ImageSizeComponent: React.FC = () => {
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -9,9 +10,10 @@ const ImageSizeComponent: React.FC = () => {
     }
   );
   const [error, setError] = useState<string | null>(null);
+  const [hoveredColor, setHoveredColor] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const canvasWidth = 400; // Фиксированная ширина канваса
-  const canvasHeight = 300; // Фиксированная высота канваса
+  const canvasWidth = 400;
+  const canvasHeight = 300;
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -31,6 +33,7 @@ const ImageSizeComponent: React.FC = () => {
 
   const handleImageLoad = () => {
     const image = new Image();
+    image.crossOrigin = "anonymous"; // Установите crossOrigin на "anonymous"
     image.src = imageUrl;
     image.onload = () => {
       setImageSize({ width: image.width, height: image.height });
@@ -52,29 +55,58 @@ const ImageSizeComponent: React.FC = () => {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     context.drawImage(image, 0, 0, canvasWidth, canvasHeight);
+
+    canvas.addEventListener("mousemove", handleCanvasMouseMove);
+    canvas.addEventListener("mouseleave", handleCanvasMouseLeave);
+  };
+
+  const handleCanvasMouseMove = (event: MouseEvent) => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+
+    if (!context) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    try {
+      const pixel = context.getImageData(x, y, 1, 1).data;
+      const color = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+      setHoveredColor(color);
+    } catch (error) {
+      // Handle the error, for example, show a message to the user
+      console.error("Failed to get pixel data:", error);
+    }
+  };
+
+  const handleCanvasMouseLeave = () => {
+    setHoveredColor(null);
   };
 
   return (
     <div className="form">
-      <input
-        className="from__input-url"
-        type="text"
-        placeholder="Enter image URL"
-        value={imageUrl}
-        onChange={handleInputChange}
-      />
-      <button onClick={handleImageLoad} className="form__btn-link">
-        Загрузка изображения из URL
-      </button>
-      <input
-        className="from__input-file"
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-      />
-      <button onClick={handleImageLoad} className="form__btn-file">
-        Загрузка изображения из файла
-      </button>
+      <div className="form__link">
+        <input
+          className="from__input-url"
+          type="text"
+          placeholder="Enter image URL"
+          value={imageUrl}
+          onChange={handleInputChange}
+        />
+        <input
+          className="from__input-file"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+        <button onClick={handleImageLoad} className="form__btn-link">
+          Загрузка изображения
+        </button>
+      </div>
+
       {error && <div>{error}</div>}
       {imageSize.width > 0 && imageSize.height > 0 && (
         <div>
@@ -83,7 +115,22 @@ const ImageSizeComponent: React.FC = () => {
           <p>Height: {imageSize.height}</p>
         </div>
       )}
-      <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
+      {hoveredColor && (
+        <div className="hover__color">
+          <p>Hovered Color:</p>
+          <div
+            style={{
+              width: "20px",
+              height: "20px",
+              backgroundColor: hoveredColor,
+            }}
+          />
+        </div>
+      )}
+      <canvas
+        ref={canvasRef}
+        style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px` }}
+      />
     </div>
   );
 };
